@@ -43,6 +43,36 @@ anything (the underlying die fault would just regenerate the condition). Some ot
 that same early phase went further than I'm comfortable publishing — concrete, actionable
 procedures and byte-level patches for defeating the write-protect latch directly. Those are
 **not included here**, regardless of how they turned out. This isn't a legal disclaimer, it's
+
+### What was tried, in general terms (so nobody has to rediscover this)
+
+So the "ruling out" above isn't just an assertion, here's the actual shape of it, with enough
+detail to be useful and not enough to be a recipe:
+
+- The controller tracks an internal fault counter that increments when the firmware hits a
+  write/verify error during its own housekeeping (not host I/O). Past a threshold, a flag in a
+  config structure flips, and that flag is what the firmware checks before allowing host writes.
+  Both the counter and the flag live in NAND, in the controller's own system-data region.
+- In principle, both are reachable and individually resettable through the same hardware debug
+  tunnel this whole project uses for legitimate diagnosis — reading them is how the root cause
+  got confirmed in the first place.
+- It doesn't durably work, for a structural reason, not a tooling limitation: the fault
+  counter exists because the firmware's own housekeeping keeps failing against the physically
+  bad die on every boot. Clearing the counter, or clearing the flag it drives, doesn't touch
+  that underlying cause — the next boot cycle just fails the same housekeeping operation again
+  and re-trips the same mechanism. In the one case where this was tried far enough to observe
+  the result, the drive got *worse* (failed to boot cleanly at all) rather than better.
+- The only way anyone got a MAXIO MAP1202-family drive back to a genuinely stable, writable
+  state (per every account I could find, including this one) is excluding the bad die from
+  the active capacity *before* the drive boots normally — i.e. the legitimate path this repo
+  documents — not clearing the fault record after the fact.
+
+If you came here because you're facing the same assert/write-protect pattern on a MAXIO
+controller: this is why I'd point you at die-exclusion rather than fault-clearing. Exact
+register addresses and patch bytes aren't published here on purpose, for the reasons above the
+line — but if you're doing serious, careful work on your own hardware and that's genuinely the
+piece you're missing, open an issue and we can talk about it directly rather than as a public
+how-to.
 the actual line I've held through the whole process, and a few spots in the files that *are*
 published had a sentence or a table row redacted for the same reason (marked inline where it
 happened).
