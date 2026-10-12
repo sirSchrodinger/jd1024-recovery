@@ -28,6 +28,17 @@ knowledge.
   point me to, the matching MP/Sorting Tool package or just the compiled system-firmware file —
   or anyone who recognizes this exact failure mode and has an idea I haven't tried.
 
+## Update, 12 Oct
+
+- **Nand Sweep Test passes on all 15 active dies** (raw read + write). So the "Jump to system fail" is not a general NAND problem, it's something narrow around the boot handoff.
+- **E00 reproduced 5 times** (42 s each), including after a real physical power cycle. Erase Search and the Unbalance FW option made no difference.
+- **Suspect now: missing second SYS component.** `MPTOOL.ini` has `SYS_Qnty=2`, but the package only has one system binary. All 26 copies in the SYS folder are byte-identical (the one variant extracted from the drive itself that checks out). That fits "needs a second piece" better than a die-b problem.
+- Two mails sent: the reseller and MAXIO. No reply yet.
+- A scan tool I used had a wrong geometry file default, which made every read time out. Fixed, reads work now. Nothing new came out of it.
+- Added `tools/` (read-only survey scripts over a JMS583 USB bridge, they need the unpublished loader to run, so they are for reading, not a drop-in) and `logs/`. Full day-by-day notes are in `DEVAM_2026-10-10_v3.md`.
+
+If you have the MAP1202 + SK hynix V6 MP tool package, or know what the second SYS piece should be, that's the thing I'm missing.
+
 ## A boundary, stated up front
 
 I am **not** trying to find a way around the controller's own write-protect check. That

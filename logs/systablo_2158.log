@@ -1,0 +1,27 @@
+21:58:15 CIKARILMASI bekleniyor (tel cikar, urun modu)...
+21:58:58 cikarildi; TAKILMASI bekleniyor...
+Bus 003 Device 026: ID 152d:a583 JMicron Technology Corp. / JMicron USA Technology Corp. External
+21:59:13 sg=/dev/sg1 -- boot icin 40s bekleme (WP-on 15-die servise gelsin)
+=== servis kontrolu (readcap 960GB=1875385008 bekleniyor) ===
+  d1 readcap blocks=1
+  d2 readcap blocks=1
+  d3 readcap blocks=1
+  d4 readcap blocks=1
+  d5 readcap blocks=1
+=== sistem-tablo ReadRam ===
+Identify cevapsiz (phase2: >>> transport error: Host_status=0x07 [DID_ERROR]
+Driver_status=0x08 [DRIVER_SENSE]
+
+SCSI Status: Good 
+
+Error 99 occurred, no data received) - yine de tunel deneniyor
+  ReadRam req 0x00000000: None phase2: >>> transport error: Host_status=0x03 [DID_TIME_OUT]
+Driver_status=0x08 [DRIVER_SENSE]
+
+SCSI Status: Good
+  ReadRam req 0x008036C0: None phase2: >>> transport error: Host_status=0x03 [DID_TIME_OUT]
+Driver_status=0x08 [DRIVER_SENSE]
+
+SCSI Status: Good
+  geom_struct_008036E0 @0x008036C0: OKUNAMADI
+22:01:59 BITTI
