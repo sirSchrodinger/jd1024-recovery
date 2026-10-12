@@ -39,9 +39,26 @@ knowledge.
 
 If you have the MAP1202 + SK hynix V6 MP tool package, or know what the second SYS piece should be, that's the thing I'm missing.
 
+## Straight answer: yes, I tried the write-protect bypass
+
+I did. Early on I went after the write-protect latch directly: reading the fault record from NAND through the debug tunnel and trying to clear it so the drive would accept writes. It was 90+ attempts across several sessions. It never gave me a durable writable drive. In the one case I pushed far enough, the drive got worse (stopped booting cleanly), because the bad die just trips the counter again on the next boot.
+
+After that I stopped and switched to the vendor-tool route (exclude the bad die properly). I still don't publish the register addresses or patch bytes for the bypass, because they would not fix anything for you either, and they are a good way to brick a drive. The reasoning is in the section below. I'm saying this plainly so nobody thinks I started on the clean path. I didn't.
+
+## Made with AI (Claude), and how far that got
+
+Most of the reverse engineering, scripts and these notes were done with Claude (Claude Code) running in my terminal, with me deciding direction and doing the physical steps (plugging, unplugging, power cycles). Several `ANALIZ_*` files are written analyses by Claude sessions from disassembly and dumps.
+
+If you try the same with Claude, GPT or any other assistant, expect this:
+
+- It gets surprisingly deep. Disassembling the vendor tool, finding the capacity check, patching the die-exclusion bugs, building a USB-bridge tunnel to the controller. All of that came out of these sessions.
+- It also gets stuck exactly where I'm stuck: it can't produce a firmware binary that isn't on the disk. Don't expect a model to invent the missing V6 system FW.
+- On the write-protect clearing direction the assistant's safety layer stopped later attempts, and I didn't push it. The early attempts happened before that.
+- Check its claims. A few of my notes had to be corrected after the fact (see the "denetim" file in `notlar/`). Anything marked as hypothesis in the notes really is one.
+
 ## A boundary, stated up front
 
-I am **not** trying to find a way around the controller's own write-protect check. That
+I am **no longer** trying to find a way around the controller's own write-protect check. That
 assert-driven write-protect is a deliberate safety mechanism responding to a genuine, confirmed
 hardware fault on one die — not a bug to route around. Everything in this repo is about getting
 the *legitimate* vendor recovery tool to do a real, correct recovery (exclude the bad die
